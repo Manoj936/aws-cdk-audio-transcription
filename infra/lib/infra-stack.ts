@@ -76,21 +76,7 @@ export class InfraStack extends cdk.Stack {
     });
     
 
-    // 6️⃣ add dynamo table to store the status of the transcription job
-
-    const transcriptionTable = new cdk.aws_dynamodb.Table(this, 'TranscriptionStatusTable', {
-      partitionKey: {name:'jobId' , type: cdk.aws_dynamodb.AttributeType.STRING}, 
-      sortKey : {name:'timestamp' , type: cdk.aws_dynamodb.AttributeType.NUMBER},
-      removalPolicy : cdk.RemovalPolicy.DESTROY, // Automatically delete the table when the stack is deleted
-      billingMode : cdk.aws_dynamodb.BillingMode.PAY_PER_REQUEST, // Use on-demand billing mode
-    })
-    
-    new cdk.CfnOutput(this,  'TranscriptionStatusTableName', {
-      value: transcriptionTable.tableName,
-      description: 'The name of the DynamoDB table for transcription status',
-    });
-
-    //7️⃣ creating an lambda function to process the transcription job
+    // 6️⃣creating an lambda function to process the transcription job
 
     const transcriptionProcessorFunction = new cdk.aws_lambda.Function(this, 'TranscriptionProcessorFunction', {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
@@ -101,21 +87,19 @@ export class InfraStack extends cdk.Stack {
       environment:{
         SOURCE_BUCKET_NAME : sourceBucket.bucketName,
         DEST_BUCKET_NAME : destBucket.bucketName,
-        TRANSCRIPTION_TABLE_NAME : transcriptionTable.tableName,
         QUEUE_URL : transcriptionRequestQueue.queueUrl,
         OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
       }
     })
-    // 8️⃣ Connect to the sqs
+    // 7️⃣ Connect to the sqs
     transcriptionProcessorFunction.addEventSource(new cdk.aws_lambda_event_sources.SqsEventSource(transcriptionRequestQueue, {
       batchSize : 1, // Process one message at a time
       maxBatchingWindow : cdk.Duration.seconds(10), // Wait up to 10 seconds for a batch of messages before invoking the Lambda function
     }))
 
-    // 9️⃣ Grant necessary permissions to the lambda function
+    // 8️⃣ Grant necessary permissions to the lambda function
     sourceBucket.grantRead(transcriptionProcessorFunction);
     destBucket.grantReadWrite(transcriptionProcessorFunction);
-    transcriptionTable.grantReadWriteData(transcriptionProcessorFunction);
     transcriptionRequestQueue.grantConsumeMessages(transcriptionProcessorFunction);
   }
 }

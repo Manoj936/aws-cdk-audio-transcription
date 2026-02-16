@@ -6,7 +6,6 @@ yarn.lock
 # CDK
 infra/cdk.out/
 *.d.ts
-*.js
 !*.config.js
 !jest.config.js
 

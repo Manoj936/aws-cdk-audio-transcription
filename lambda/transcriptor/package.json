@@ -2,7 +2,7 @@
   "name": "transcriptor",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "aws-sdk": "^2.1693.0",
+    "dotenv": "^17.3.1",
     "openai": "^6.22.0"
   }
 }
