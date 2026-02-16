@@ -1,0 +1,16 @@
+{
+  "name": "transcriptor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "aws-sdk": "^2.1693.0",
+    "openai": "^6.22.0"
+  }
+}
